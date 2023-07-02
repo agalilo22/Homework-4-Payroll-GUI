@@ -1,302 +1,228 @@
 import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PayrollProgram {
+public class PayrollProgramGUI {
     private JFrame loginFrame;
     private JFrame payrollFrame;
     private JTextField usernameField;
     private JPasswordField passwordField;
     private List<Employee> employeeList;
-    private String csvFilePath;
 
-    public PayrollProgram() {
+    public PayrollProgramGUI() {
         employeeList = new ArrayList<>();
         initializeLoginGUI();
+
+
     }
 
     private void initializeLoginGUI() {
+
+        //Log In Method
+
         loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setSize(300, 200);
-        loginFrame.setLocationRelativeTo(null);
-        loginFrame.setLayout(new GridBagLayout());
+        loginFrame.setSize(300, 150);
+        loginFrame.setLayout(new GridLayout(3, 2));
 
-        // Username Label and Text Field
         JLabel usernameLabel = new JLabel("Username:");
-        usernameField = new JTextField(20);
-
-        // Password Label and Text Field
+        usernameField = new JTextField();
         JLabel passwordLabel = new JLabel("Password:");
-        passwordField = new JPasswordField(20);
-
-        // Login Button
+        passwordField = new JPasswordField();
         JButton loginButton = new JButton("Login");
+
+        loginFrame.add(usernameLabel);
+        loginFrame.add(usernameField);
+        loginFrame.add(passwordLabel);
+        loginFrame.add(passwordField);
+        loginFrame.add(loginButton);
+
         loginButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 login();
             }
         });
 
-        // Add components to the login frame
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(10, 10, 10, 10);
-        loginFrame.add(usernameLabel, constraints);
-
-        constraints.gridx = 1;
-        loginFrame.add(usernameField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        loginFrame.add(passwordLabel, constraints);
-
-        constraints.gridx = 1;
-        loginFrame.add(passwordField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.CENTER;
-        loginFrame.add(loginButton, constraints);
-
         loginFrame.setVisible(true);
     }
 
     private void initializePayrollGUI() {
+
+        //Payroll GUI Method
+
         payrollFrame = new JFrame("Payroll Program");
         payrollFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        payrollFrame.setSize(500, 300);
-        payrollFrame.setLocationRelativeTo(null);
-        payrollFrame.setLayout(new BorderLayout());
+        payrollFrame.setSize(600, 400);
+        payrollFrame.setLayout(new GridLayout(12, 2));
 
-        // Add Employee Panel
-        JPanel addEmployeePanel = createAddEmployeePanel();
-        payrollFrame.add(addEmployeePanel, BorderLayout.NORTH);
+        JButton About = new JButton("About");
+        JLabel empNumLabel = new JLabel("Employee Number:");
+        JTextField empNumField = new JTextField();
+        JLabel lastNameLabel = new JLabel("Last Name:");
+        JTextField lastNameField = new JTextField();
+        JLabel firstNameLabel = new JLabel("First Name:");
+        JTextField firstNameField = new JTextField();
+        JLabel sssLabel = new JLabel("SSS Number:");
+        JTextField sssField = new JTextField();
+        JLabel philHealthLabel = new JLabel("PhilHealth Number:");
+        JTextField philHealthField = new JTextField();
+        JLabel tinLabel = new JLabel("TIN:");
+        JTextField tinField = new JTextField();
+        JLabel pagibigLabel = new JLabel("Pagibig Number:");
+        JTextField pagibigField = new JTextField();
+        JLabel hourlySalaryLabel = new JLabel("Hourly Salary:");
+        JTextField hourlySalaryField = new JTextField();
+        JLabel hoursWorkedLabel = new JLabel("Number of Hours Worked:");
+        JTextField hoursWorkedField = new JTextField();
+        JButton addButton = new JButton("Add Employee");
+        JButton deleteButton = new JButton("Delete Employee");
+        JButton addLeaveButton = new JButton("Add Leave");
+        JButton viewEmployeesButton = new JButton("View Employees");
+        JButton calculateGrossWageButton = new JButton("Calculate Gross Wage");
+        JButton OpenFileButton = new JButton ("Open CSV File");
 
-        // Employee List Panel
-        JPanel employeeListPanel = createEmployeeListPanel();
-        payrollFrame.add(employeeListPanel, BorderLayout.CENTER);
 
-        // Menu Bar
-        JMenuBar menuBar = createMenuBar();
-        payrollFrame.setJMenuBar(menuBar);
+        payrollFrame.add(OpenFileButton);
+        payrollFrame.add(About);
+        payrollFrame.add(empNumLabel);
+        payrollFrame.add(empNumField);
+        payrollFrame.add(lastNameLabel);
+        payrollFrame.add(lastNameField);
+        payrollFrame.add(firstNameLabel);
+        payrollFrame.add(firstNameField);
+        payrollFrame.add(sssLabel);
+        payrollFrame.add(sssField);
+        payrollFrame.add(philHealthLabel);
+        payrollFrame.add(philHealthField);
+        payrollFrame.add(tinLabel);
+        payrollFrame.add(tinField);
+        payrollFrame.add(pagibigLabel);
+        payrollFrame.add(pagibigField);
+        payrollFrame.add(hourlySalaryLabel);
+        payrollFrame.add(hourlySalaryField);
+        payrollFrame.add(hoursWorkedLabel);
+        payrollFrame.add(hoursWorkedField);
+        payrollFrame.add(addButton);
+        payrollFrame.add(deleteButton);
+        payrollFrame.add(viewEmployeesButton);
+        payrollFrame.add(calculateGrossWageButton);
+
+        About.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(payrollFrame, "Motor PH Payroll Prototype");
+            }
+        });
+
+        OpenFileButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        String filePath = fileChooser.getSelectedFile().getPath();
+                        readCSVFile(filePath);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        calculateGrossWageButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                calculateGrossWage( hourlySalaryField.getText(), hoursWorkedField.getText());
+            }
+        });
+
+
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addEmployee(empNumField.getText(), lastNameField.getText(), firstNameField.getText(),
+                        sssField.getText(), philHealthField.getText(), tinField.getText(), pagibigField.getText());
+                clearFields(empNumField, lastNameField, firstNameField, sssField, philHealthField, tinField, pagibigField);
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                deleteEmployee(empNumField.getText());
+                clearFields(empNumField, lastNameField, firstNameField, sssField, philHealthField, tinField, pagibigField);
+            }
+        });
+
+        addLeaveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addLeave(empNumField.getText());
+                clearFields(empNumField, lastNameField, firstNameField, sssField, philHealthField, tinField, pagibigField);
+            }
+        });
+
+        viewEmployeesButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewEmployees();
+            }
+        });
 
         payrollFrame.setVisible(true);
     }
 
-    private JPanel createAddEmployeePanel() {
-        JPanel addEmployeePanel = new JPanel(new GridBagLayout());
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(5, 5, 5, 5);
-
-        // Employee Number Label and Text Field
-        JLabel empNumLabel = new JLabel("Employee Number:");
-        JTextField empNumField = new JTextField(10);
-
-        // Last Name Label and Text Field
-        JLabel lastNameLabel = new JLabel("Last Name:");
-        JTextField lastNameField = new JTextField(10);
-
-        // First Name Label and Text Field
-        JLabel firstNameLabel = new JLabel("First Name:");
-        JTextField firstNameField = new JTextField(10);
-
-        // SSS Number Label and Text Field
-        JLabel sssLabel = new JLabel("SSS Number:");
-        JTextField sssField = new JTextField(10);
-
-        // PhilHealth Number Label and Text Field
-        JLabel philHealthLabel = new JLabel("PhilHealth Number:");
-        JTextField philHealthField = new JTextField(10);
-
-        // TIN Label and Text Field
-        JLabel tinLabel = new JLabel("TIN:");
-        JTextField tinField = new JTextField(10);
-
-        // Pagibig Number Label and Text Field
-        JLabel pagibigLabel = new JLabel("Pagibig Number:");
-        JTextField pagibigField = new JTextField(10);
-
-        // Add Employee Button
-        JButton addEmployeeButton = new JButton("Add Employee");
-        addEmployeeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String empNum = empNumField.getText().trim();
-                String lastName = lastNameField.getText().trim();
-                String firstName = firstNameField.getText().trim();
-                String sss = sssField.getText().trim();
-                String philHealth = philHealthField.getText().trim();
-                String tin = tinField.getText().trim();
-                String pagibig = pagibigField.getText().trim();
-
-                addEmployee(empNum, lastName, firstName, sss, philHealth, tin, pagibig);
-
-                // Clear the input fields after adding an employee
-                empNumField.setText("");
-                lastNameField.setText("");
-                firstNameField.setText("");
-                sssField.setText("");
-                philHealthField.setText("");
-                tinField.setText("");
-                pagibigField.setText("");
-            }
-        });
-
-        // Add components to the add employee panel
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        addEmployeePanel.add(empNumLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(empNumField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        addEmployeePanel.add(lastNameLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(lastNameField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        addEmployeePanel.add(firstNameLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(firstNameField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 3;
-        addEmployeePanel.add(sssLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(sssField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 4;
-        addEmployeePanel.add(philHealthLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(philHealthField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 5;
-        addEmployeePanel.add(tinLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(tinField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 6;
-        addEmployeePanel.add(pagibigLabel, constraints);
-
-        constraints.gridx = 1;
-        addEmployeePanel.add(pagibigField, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 7;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.CENTER;
-        addEmployeePanel.add(addEmployeeButton, constraints);
-
-        return addEmployeePanel;
-    }
-
-    private JPanel createEmployeeListPanel() {
-        JPanel employeeListPanel = new JPanel(new BorderLayout());
-
-        JTextArea employeeTextArea = new JTextArea(10, 40);
-        employeeTextArea.setEditable(false);
-
-        JScrollPane scrollPane = new JScrollPane(employeeTextArea);
-        employeeListPanel.add(scrollPane, BorderLayout.CENTER);
-
-        // View Employees Button
-        JButton viewEmployeesButton = new JButton("View Employees");
-        viewEmployeesButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                viewEmployees(employeeTextArea);
-            }
-        });
-
-        employeeListPanel.add(viewEmployeesButton, BorderLayout.SOUTH);
-
-        return employeeListPanel;
-    }
-
-    private JMenuBar createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-
-        JMenu fileMenu = new JMenu("File");
-
-        JMenuItem openMenuItem = new JMenuItem("Open CSV");
-        openMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                chooseCSVFile();
-            }
-        });
-
-        fileMenu.add(openMenuItem);
-
-        menuBar.add(fileMenu);
-
-        return menuBar;
-    }
-
-    private void chooseCSVFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showOpenDialog(payrollFrame);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            csvFilePath = fileChooser.getSelectedFile().getPath();
-            loadEmployeesFromCSV();
-        }
-    }
 
     private void login() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
+        // Perform authentication logic here
         if (isValidLogin(username, password)) {
-            loginFrame.dispose();
+            loginFrame.setVisible(false);
             initializePayrollGUI();
         } else {
-            JOptionPane.showMessageDialog(loginFrame, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(loginFrame, "Invalid username or password. Please try again.");
         }
     }
 
     private boolean isValidLogin(String username, String password) {
-        // Same code as before
+        // Add your own authentication logic here
+        return username.equals("admin") && password.equals("pass");
     }
 
     private void addEmployee(String empNum, String lastName, String firstName, String sss, String philHealth, String tin, String pagibig) {
-        // Same code as before
+        Employee employee = new Employee(empNum, lastName, firstName, sss, philHealth, tin, pagibig);
+        employeeList.add(employee);
+        JOptionPane.showMessageDialog(payrollFrame, "Employee added successfully.");
     }
 
     private void deleteEmployee(String empNum) {
-        // Same code as before
+        for (Employee employee : employeeList) {
+            if (employee.getEmpNum().equals(empNum)) {
+                employeeList.remove(employee);
+                JOptionPane.showMessageDialog(payrollFrame, "Employee deleted successfully.");
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(payrollFrame, "Employee not found.");
     }
 
     private void addLeave(String empNum) {
-        // Same code as before
+        for (Employee employee : employeeList) {
+            if (employee.getEmpNum().equals(empNum)) {
+                employee.addLeave();
+                JOptionPane.showMessageDialog(payrollFrame, "Leaves added successfully. Sick: "
+                        + employee.getSickLeaves() + ", Vacation: "
+                        + employee.getVacationLeaves() + ", Emergency: "
+                        + employee.getEmergencyLeaves());
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(payrollFrame, "Employee not found.");
     }
 
-    private void viewEmployees(JTextArea employeeTextArea) {
+    private void viewEmployees() {
         StringBuilder employeesText = new StringBuilder();
         for (Employee employee : employeeList) {
             employeesText.append("Employee Number: ").append(employee.getEmpNum()).append("\n");
@@ -306,59 +232,132 @@ public class PayrollProgram {
             employeesText.append("PhilHealth Number: ").append(employee.getPhilHealth()).append("\n");
             employeesText.append("TIN: ").append(employee.getTin()).append("\n");
             employeesText.append("Pagibig Number: ").append(employee.getPagibig()).append("\n");
+            employeesText.append("Pagibig Number: ").append(employee.getPagibig()).append("\n");
             employeesText.append("\n");
         }
 
-        employeeTextArea.setText(employeesText.toString());
+        JTextArea employeesTextArea = new JTextArea(employeesText.toString());
+        employeesTextArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(employeesTextArea);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+
+        JOptionPane.showMessageDialog(payrollFrame, scrollPane, "Employee List", JOptionPane.PLAIN_MESSAGE);
     }
 
-    private void saveEmployeesToCSV() {
-        try (CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
-            for (Employee employee : employeeList) {
-                String[] data = {
-                        employee.getEmpNum(),
-                        employee.getLastName(),
-                        employee.getFirstName(),
-                        employee.getSss(),
-                        employee.getPhilHealth(),
-                        employee.getTin(),
-                        employee.getPagibig()
-                };
-                writer.writeNext(data);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+    private void clearFields(JTextField... fields) {
+        for (JTextField field : fields) {
+            field.setText("");
         }
     }
 
-    private void loadEmployeesFromCSV() {
-        employeeList.clear();
+    private class Employee {
 
-        try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                if (nextLine.length == 7) {
-                    String empNum = nextLine[0];
-                    String lastName = nextLine[1];
-                    String firstName = nextLine[2];
-                    String sss = nextLine[3];
-                    String philHealth = nextLine[4];
-                    String tin = nextLine[5];
-                    String pagibig = nextLine[6];
-                    Employee employee = new Employee(empNum, lastName, firstName, sss, philHealth, tin, pagibig);
-                    employeeList.add(employee);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        // Classes
+        private String empNum;
+        private String lastName;
+        private String firstName;
+        private String sss;
+        private String philHealth;
+        private String tin;
+        private String pagibig;
+
+        private String About;
+        private int sickLeaves;
+        private int vacationLeaves;
+        private int emergencyLeaves;
+
+        public Employee(String empNum, String lastName, String firstName, String sss, String philHealth, String tin, String pagibig) {
+            this.empNum = empNum;
+            this.lastName = lastName;
+            this.firstName = firstName;
+            this.sss = sss;
+            this.philHealth = philHealth;
+            this.tin = tin;
+            this.pagibig = pagibig;
+            this.About = "Motor PH Requirements";
+            this.sickLeaves = 5;
+            this.vacationLeaves = 10;
+            this.emergencyLeaves = 5;
+        }
+
+        public String getEmpNum() {
+            return empNum;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getSss() {
+            return sss;
+        }
+
+        public String getPhilHealth() {
+            return philHealth;
+        }
+
+        public String getTin() {
+            return tin;
+        }
+
+        public String getPagibig() {
+            return pagibig;
+        }
+
+        public int getSickLeaves() {
+            return sickLeaves;
+        }
+
+        public int getVacationLeaves() {
+            return vacationLeaves;
+        }
+
+        public int getEmergencyLeaves() {
+            return emergencyLeaves;
+        }
+
+        public void addLeave() {
+            sickLeaves++;
+            vacationLeaves++;
+            emergencyLeaves++;
         }
     }
+    private void calculateGrossWage(String hourlySalaryText, String hoursWorkedText) {
+        try {
+            double hourlySalary = Double.parseDouble(hourlySalaryText);
+            double hoursWorked = Double.parseDouble(hoursWorkedText);
+
+            double grossWage = hourlySalary * hoursWorked;
+
+            JOptionPane.showMessageDialog(payrollFrame, "Gross Wage: PHP" + grossWage);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(payrollFrame, "Invalid input. Please enter numeric values.");
+        }
+    }
+    private void readCSVFile(String filePath) throws Exception {
+        CSVReader reader = new CSVReader(new FileReader(filePath));
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            for (String item : nextLine) {
+                System.out.print(item + " ");
+            }
+            System.out.println();
+        }
+        reader.close();
+    }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override
             public void run() {
-                new PayrollProgram();
+                new PayrollProgramGUI();
             }
         });
     }
